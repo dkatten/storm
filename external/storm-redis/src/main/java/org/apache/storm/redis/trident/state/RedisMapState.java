@@ -255,7 +255,11 @@ public class RedisMapState<T> implements IBackingMap<T> {
         for (List<Object> key : keys) {
             String strKey = keyFactory.build(key);
             String value = keyValue.get(strKey);
-            values.add(value);
+            if (bytes != null) {
+              values.add(new String(bytes));
+            } else {
+              values.add(null);
+            }
         }
         return values;
     }
@@ -303,7 +307,7 @@ public class RedisMapState<T> implements IBackingMap<T> {
                 for (int i = 0; i < keys.size(); i++) {
                     String val = new String(serializer.serialize(vals.get(i)));
                     keyValues.put(keyFactory.build(keys.get(i)), val);
-                }               
+                }
                 jedis.hmset(this.options.hkey, keyValues);
 
             } finally {
